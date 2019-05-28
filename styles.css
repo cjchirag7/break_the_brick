@@ -1,0 +1,11 @@
+.jumbotron{
+    background: yellow;
+    color: darkblue;
+}
+canvas { background: #fffdd0;
+    border: solid 1px blue;  
+    width: 100vw;;
+}
+body{
+    background: black;
+}
