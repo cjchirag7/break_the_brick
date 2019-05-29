@@ -82,7 +82,7 @@ for(var c=0; c<brickColumnCount; c++) {
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
 document.addEventListener("mousemove", mouseMoveHandler, false);
-document.addEventListener("click", mouseMoveHandler, false);
+document.addEventListener("touchmove", mouseMoveHandler, false);
 function keyDownHandler(e) {
     if(e.key == "Right" || e.key == "ArrowRight") {
         rightPressed = true;
@@ -124,7 +124,7 @@ function collisionDetection() {
             score+=5;
           }
           if(score == highScore) {
-            alert("YOU WIN, CONGRATS!\n Your score is: "+highScore);
+            alert("YOU WIN, CONGRATS!\n Your score is: "+highScore+"\n Try Again");
             document.location.reload();
            }
         }
@@ -203,7 +203,7 @@ function draw() {
       lives--;
       if(!lives) {
         alert("....GAME OVER....\nYour score was "+score+".\n .....Try Again.....");
-        document.location.reload();
+        document.location.reload(true);
       }
       else {
         if(lives!=1)
