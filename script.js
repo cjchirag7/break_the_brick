@@ -1,14 +1,23 @@
-$(function () {
-  $('[data-toggle="popover"]').popover()
-})
 var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
-//var canvasWidth=window.innerWidth;
-//var canvasHeight=canvasWidth*0.667;
-var canvasWidth=ctx.canvas.width;
-var canvasHeight=ctx.canvas.height;
-ctx.canvas.width=canvasHeight*0.95;
-ctx.canvas.height=canvasHeight;
+var canvasWidth
+var canvasHeight
+var flag=1;
+if(window.innerHeight>window.innerWidth)
+{
+  flag=1;
+  canvasWidth=window.innerWidth;
+  canvasHeight=canvasWidth*0.667;
+  ctx.canvas.width=canvasHeight*0.95;
+  ctx.canvas.height=canvasHeight;
+}
+else{
+  flag=0;
+  canvasHeight=window.innerHeight-15;
+  canvasWidth=window.innerWidth;
+  ctx.canvas.width=canvasWidth;
+  ctx.canvas.height=canvasHeight;
+}
 var ballRadius = canvasWidth/48;
 var x = canvas.width/2;
 var y = canvas.height-30;
@@ -19,8 +28,8 @@ var paddleWidth = canvasWidth/6.4;
 var paddleX = (canvas.width-paddleWidth)/2;
 var rightPressed = false;
 var leftPressed = false;
-var brickRowCount = 3;
-var brickColumnCount = 5;
+var brickRowCount = (flag)?3:5;
+var brickColumnCount = (flag)?5:4;;
 var brickWidth = canvasWidth/6.4;
 var brickHeight = canvasWidth/30;
 var brickPadding = canvasWidth/48;
@@ -28,19 +37,52 @@ var brickOffsetTop = canvasWidth/16;
 var brickOffsetLeft = canvasWidth/16;
 var score = 0;
 var lives = 3;
-
+var scorebox=document.getElementById("scorebox");
+var livebox=document.getElementById("livebox");
+var colors=["red", "#2c99ac"]
 var bricks = [];
+var random,highScore=0;
+var totalBricks=brickRowCount*brickColumnCount;
+var darkBricks=0,lightBricks=0;
 for(var c=0; c<brickColumnCount; c++) {
   bricks[c] = [];
   for(var r=0; r<brickRowCount; r++) {
-    bricks[c][r] = { x: 0, y: 0, status: 1 };
+    random = Math.round(Math.random() * (colors.length));
+    bricks[c][r] = { x: 0, y: 0, status: 1, color: colors[random] };
+    if(colors[random]===colors[0])
+      {
+      darkBricks++;
+      if(darkBricks<=(totalBricks)/2)
+        {
+          bricks[c][r].status=2;
+          highScore+=10;
+        }
+      else{
+          bricks[c][r].color=colors[1];
+          bricks[c][r].status=1;
+          highScore+=5;
+        }
+      }
+    else{
+      lightBricks++;
+      if(lightBricks<=(totalBricks)/2)
+        {
+          bricks[c][r].status=1;
+          highScore+=5;
+        }
+      else{
+          bricks[c][r].color=colors[0];
+          bricks[c][r].status=2;
+          highScore+=10;
+        }      
+    }
   }
 }
 
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
 document.addEventListener("mousemove", mouseMoveHandler, false);
-
+document.addEventListener("click", mouseMoveHandler, false);
 function keyDownHandler(e) {
     if(e.key == "Right" || e.key == "ArrowRight") {
         rightPressed = true;
@@ -69,15 +111,22 @@ function collisionDetection() {
   for(var c=0; c<brickColumnCount; c++) {
     for(var r=0; r<brickRowCount; r++) {
       var b = bricks[c][r];
-      if(b.status == 1) {
+      if(b.status >= 1) {
         if(x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight) {
           dy = -dy;
-          b.status = 0;
-          score++;
-          if(score == brickRowCount*brickColumnCount) {
-            alert("YOU WIN, CONGRATS!");
-            document.location.reload();
+          if(b.status===1)
+            {
+              b.status = 0;
+              score+=5;
+            }
+          else{
+            b.status=1;
+            score+=5;
           }
+          if(score == highScore) {
+            alert("YOU WIN, CONGRATS!\n Your score is: "+highScore);
+            document.location.reload();
+           }
         }
       }
     }
@@ -87,52 +136,57 @@ function collisionDetection() {
 function drawBall() {
   ctx.beginPath();
   ctx.arc(x, y, ballRadius, 0, Math.PI*2);
-  ctx.fillStyle = "#FFD700";
+  ctx.fillStyle = "gold";
+  ctx.globalAlpha=1;
   ctx.fill();
   ctx.closePath();
 }
 function drawPaddle() {
   ctx.beginPath();
   ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
-  ctx.fillStyle = "black";
+  ctx.fillStyle = "brown";
+  ctx.globalAlpha=1;
   ctx.fill();
   ctx.closePath();
 }
+
 function drawBricks() {
   for(var c=0; c<brickColumnCount; c++) {
     for(var r=0; r<brickRowCount; r++) {
-      if(bricks[c][r].status == 1) {
+      if(bricks[c][r].status >= 1) {
         var brickX = (r*(brickWidth+brickPadding))+brickOffsetLeft;
         var brickY = (c*(brickHeight+brickPadding))+brickOffsetTop;
         bricks[c][r].x = brickX;
         bricks[c][r].y = brickY;
         ctx.beginPath();
         ctx.rect(brickX, brickY, brickWidth, brickHeight);
-        ctx.fillStyle = "#8b4f39";
+        ctx.fillStyle = bricks[c][r].color;
+        if(bricks[c][r].status===1) ctx.globalAlpha=0.5;
+        else ctx.globalAlpha=1;
         ctx.fill();
         ctx.closePath();
       }
     }
   }
 }
-/*function drawScore() {
-  ctx.font = "16px Arial";
-  ctx.fillStyle = "#0095DD";
-  ctx.fillText("Score: "+score, 8, 20);
+function drawScore() {
+  if(window.innerHeight>window.innerWidth){
+    scorebox.innerHTML="Score: "+score;
+  } 
 }
 function drawLives() {
-  ctx.font = "16px Arial";
-  ctx.fillStyle = "#0095DD";
-  ctx.fillText("Lives: "+lives, canvas.width-65, 20);
-}*/
+  if(window.innerHeight>window.innerWidth){
+    livebox.innerHTML="Lives: "+lives;
+  } 
+}
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawBricks();
   drawBall();
   drawPaddle();
-  //drawScore();
-  //drawLives();
+  drawScore();
+  drawLives();
   collisionDetection();
 
   if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
@@ -148,24 +202,28 @@ function draw() {
     else {
       lives--;
       if(!lives) {
-        alert("GAME OVER");
+        alert("....GAME OVER....\nYour score was "+score+".\n .....Try Again.....");
         document.location.reload();
       }
       else {
+        if(lives!=1)
+         alert(" Oops! Lost a life \n Only "+lives+" lives left");
+        else
+         alert(" Oops! Lost a life \n Only "+lives+" life left");
         x = canvas.width/2;
         y = canvas.height-30;
-        dx = 3;
-        dy = -3;
+        dx = canvasWidth/120;
+        dy = -canvasWidth/120;
         paddleX = (canvas.width-paddleWidth)/2;
       }
     }
   }
 
   if(rightPressed && paddleX < canvas.width-paddleWidth) {
-    paddleX += 7;
+    paddleX += canvas.width/60;
   }
   else if(leftPressed && paddleX > 0) {
-    paddleX -= 7;
+    paddleX -= canvas.width/60;
   }
 
   x += dx;
