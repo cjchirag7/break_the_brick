@@ -44,6 +44,8 @@ var bricks = [];
 var random,highScore=0;
 var totalBricks=brickRowCount*brickColumnCount;
 var darkBricks=0,lightBricks=0;
+var leftButton=document.getElementById("left");
+var rightButton=document.getElementById("right");
 for(var c=0; c<brickColumnCount; c++) {
   bricks[c] = [];
   for(var r=0; r<brickRowCount; r++) {
@@ -83,6 +85,22 @@ document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
 document.addEventListener("mousemove", mouseMoveHandler, false);
 document.addEventListener("touchmove", mouseMoveHandler, false);
+leftButton.addEventListener("click",left,false);
+rightButton.addEventListener("click",right,false);
+
+function init(){
+  rightPressed=false;
+  leftPressed=false;
+}
+function right(){
+  rightPressed=true;
+  setTimeout(init,200);
+}
+function left(){
+  leftPressed=true;
+  setTimeout(init,200);
+}
+
 function keyDownHandler(e) {
     if(e.key == "Right" || e.key == "ArrowRight") {
         rightPressed = true;

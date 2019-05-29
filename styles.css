@@ -19,3 +19,16 @@ body{
 #scorebox,#livebox{
    color: white;    
 }
+
+#left{
+    position: absolute;
+    left: 15px;
+    color: white;
+    cursor: pointer;
+}
+#right{
+    position: absolute;
+    right: 15px;
+    color: white;
+    cursor: pointer;
+}
