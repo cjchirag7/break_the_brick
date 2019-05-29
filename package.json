@@ -1,0 +1,19 @@
+{
+  "name": "break_the_brick",
+  "version": "1.0.0",
+  "description": "Break the break game developed using pure HTML, CSS and JS",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cjchirag7/break_the_brick.git"
+  },
+  "author": "Chirag Jain",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cjchirag7/break_the_brick/issues"
+  },
+  "homepage": "https://github.com/cjchirag7/break_the_brick#readme"
+}
