@@ -46,6 +46,8 @@ var totalBricks=brickRowCount*brickColumnCount;
 var darkBricks=0,lightBricks=0;
 var leftButton=document.getElementById("left");
 var rightButton=document.getElementById("right");
+var displayTimes=0;
+
 for(var c=0; c<brickColumnCount; c++) {
   bricks[c] = [];
   for(var r=0; r<brickRowCount; r++) {
@@ -81,24 +83,35 @@ for(var c=0; c<brickColumnCount; c++) {
   }
 }
 
-document.addEventListener("keydown", keyDownHandler, false);
-document.addEventListener("keyup", keyUpHandler, false);
-document.addEventListener("mousemove", mouseMoveHandler, false);
-document.addEventListener("touchmove", mouseMoveHandler, false);
-leftButton.addEventListener("click",left,false);
-rightButton.addEventListener("click",right,false);
+if(window.innerWidth<990){
+  document.addEventListener("touchmove", mouseMoveHandler);
+  leftButton.addEventListener("touchstart",left);
+  rightButton.addEventListener("touchstart",right);
+  leftButton.addEventListener("touchend",left_init);
+  rightButton.addEventListener("touchend",right_init);
+}
+else{
+  document.addEventListener("keydown", keyDownHandler);
+  document.addEventListener("keyup", keyUpHandler);
+  document.addEventListener("mousemove", mouseMoveHandler);
+    
+}
 
-function init(){
+function right_init(){
   rightPressed=false;
+}
+
+
+function left_init(){
   leftPressed=false;
 }
+
 function right(){
   rightPressed=true;
-  setTimeout(init,200);
 }
+
 function left(){
   leftPressed=true;
-  setTimeout(init,200);
 }
 
 function keyDownHandler(e) {
@@ -117,14 +130,6 @@ function keyUpHandler(e) {
     else if(e.key == "Left" || e.key == "ArrowLeft") {
         leftPressed = false;
     }
-}
-
-function wait(ms) {
-  var start = Date.now(),
-      now = start;
-  while (now - start < ms) {
-    now = Date.now();
-  }
 }
 
 function mouseMoveHandler(e) {
@@ -149,9 +154,9 @@ function collisionDetection() {
             b.status=1;
             score+=5;
           }
-          if(score == highScore) {
+          if((score == highScore)&&(displayTimes==0)) {
             alert("YOU WIN, CONGRATS!\n Your score is: "+highScore);
-            wait(1000);
+            displayTimes=1;
             document.location.reload();
            }
         }
@@ -199,12 +204,18 @@ function drawBricks() {
 function drawScore() {
   if(window.innerHeight>window.innerWidth){
     scorebox.innerHTML="Score: "+score;
+  }
+  else{
+    livebox.innerHTML="<br><br>";
   } 
 }
 function drawLives() {
   if(window.innerHeight>window.innerWidth){
     livebox.innerHTML="Lives: "+lives;
   } 
+  else{
+    livebox.innerHTML="<br><br>";
+  }
 }
 
 function draw() {
@@ -229,10 +240,11 @@ function draw() {
     else {
       if(lives>0)
         lives--;
-      if(!lives) {
+      if(!lives&&(displayTimes==0)) {
+        displayTimes=1;
         alert("....GAME OVER....\nYour score was "+score+".\n .....Try Again.....");
-        wait(1000);
         document.location.reload();
+
       }
       else if(lives>0){
         if(lives!=1)
