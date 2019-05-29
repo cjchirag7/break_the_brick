@@ -101,6 +101,14 @@ function keyUpHandler(e) {
     }
 }
 
+function wait(ms) {
+  var start = Date.now(),
+      now = start;
+  while (now - start < ms) {
+    now = Date.now();
+  }
+}
+
 function mouseMoveHandler(e) {
   var relativeX = e.clientX - canvas.offsetLeft;
   if(relativeX > 0 && relativeX < canvas.width) {
@@ -124,7 +132,8 @@ function collisionDetection() {
             score+=5;
           }
           if(score == highScore) {
-            alert("YOU WIN, CONGRATS!\n Your score is: "+highScore+"\n Try Again");
+            alert("YOU WIN, CONGRATS!\n Your score is: "+highScore);
+            wait(1000);
             document.location.reload();
            }
         }
@@ -200,12 +209,14 @@ function draw() {
       dy = -dy;
     }
     else {
-      lives--;
+      if(lives>0)
+        lives--;
       if(!lives) {
         alert("....GAME OVER....\nYour score was "+score+".\n .....Try Again.....");
-        document.location.reload(true);
+        wait(1000);
+        document.location.reload();
       }
-      else {
+      else if(lives>0){
         if(lives!=1)
          alert(" Oops! Lost a life \n Only "+lives+" lives left");
         else
